@@ -53,7 +53,7 @@ export const ProfessorCalificaciones = () => {
             <h3 className="text-lg font-medium text-gray-900">Listado de Estudiantes (Periodo 2023-1)</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="w-full min-w-[500px] divide-y divide-gray-200">
               <thead className="bg-white">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>

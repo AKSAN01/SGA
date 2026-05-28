@@ -95,11 +95,11 @@ export const StudentCertificado = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full md:w-auto">
           <button
             onClick={handlePrint}
             disabled={isGenerating || materiasAprobadas.length === 0}
-            className="flex items-center gap-2 px-4 py-2.5 bg-ud-green text-white text-[13px] font-bold rounded-xl hover:bg-ud-green-mid cursor-pointer transition-all duration-200 shadow-sm active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-ud-green text-white text-[13px] font-bold rounded-xl hover:bg-ud-green-mid cursor-pointer transition-all duration-200 shadow-sm active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Printer size={16} />
             <span>{isGenerating ? 'Generando...' : 'Descargar PDF / Imprimir'}</span>
@@ -165,7 +165,7 @@ export const StudentCertificado = () => {
               </p>
             </div>
           ) : (
-            <div className="certificate-print-area w-full max-w-[800px] bg-white border border-gray-250 p-12 md:p-16 shadow-xl relative font-serif text-black aspect-[1/1.4] box-sizing-border flex flex-col justify-between shrink-0">
+            <div className="certificate-print-area w-full min-w-[760px] print:min-w-0 max-w-[800px] bg-white border border-gray-250 p-12 md:p-16 shadow-xl relative font-serif text-black aspect-[1/1.4] box-sizing-border flex flex-col justify-between shrink-0">
               
               <div className="text-center space-y-2 border-b-2 border-ud-green pb-6 relative">
                 <h2 className="text-[16px] md:text-[18px] font-extrabold text-ud-green uppercase">

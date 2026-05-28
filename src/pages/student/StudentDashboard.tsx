@@ -44,28 +44,30 @@ export const StudentDashboard = () => {
       <div className="bg-white rounded-[12px] border border-gray-200 p-5 mb-4">
         <h3 className="text-[14px] font-semibold font-sans text-ud-dark mb-3">Materias inscritas — 2025-1</h3>
         
-        <table className="w-full border-collapse font-sans text-[13px]">
-          <thead>
-            <tr>
-              <th className="text-left py-2 px-2.5 text-[11px] uppercase tracking-wide text-ud-muted border-b border-gray-200 font-semibold">Código</th>
-              <th className="text-left py-2 px-2.5 text-[11px] uppercase tracking-wide text-ud-muted border-b border-gray-200 font-semibold">Materia</th>
-              <th className="text-left py-2 px-2.5 text-[11px] uppercase tracking-wide text-ud-muted border-b border-gray-200 font-semibold">Créditos</th>
-              <th className="text-left py-2 px-2.5 text-[11px] uppercase tracking-wide text-ud-muted border-b border-gray-200 font-semibold">Docente</th>
-            </tr>
-          </thead>
-          <tbody>
-            {materiasInscritas.map(m => (
-              <tr key={m.id} className="hover:bg-ud-bg">
-                <td className="py-2.5 px-2.5 border-b border-gray-200 text-ud-dark">
-                  <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#F1EFE8] text-ud-muted">{m.codigo}</span>
-                </td>
-                <td className="py-2.5 px-2.5 border-b border-gray-200 text-ud-dark">{m.nombre}</td>
-                <td className="py-2.5 px-2.5 border-b border-gray-200 text-ud-dark">{m.creditos}</td>
-                <td className="py-2.5 px-2.5 border-b border-gray-200 text-ud-dark">{m.profesor}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[500px] border-collapse font-sans text-[13px]">
+            <thead>
+              <tr>
+                <th className="text-left py-2 px-2.5 text-[11px] uppercase tracking-wide text-ud-muted border-b border-gray-200 font-semibold">Código</th>
+                <th className="text-left py-2 px-2.5 text-[11px] uppercase tracking-wide text-ud-muted border-b border-gray-200 font-semibold">Materia</th>
+                <th className="text-left py-2 px-2.5 text-[11px] uppercase tracking-wide text-ud-muted border-b border-gray-200 font-semibold">Créditos</th>
+                <th className="text-left py-2 px-2.5 text-[11px] uppercase tracking-wide text-ud-muted border-b border-gray-200 font-semibold">Docente</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {materiasInscritas.map(m => (
+                <tr key={m.id} className="hover:bg-ud-bg">
+                  <td className="py-2.5 px-2.5 border-b border-gray-200 text-ud-dark">
+                    <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#F1EFE8] text-ud-muted">{m.codigo}</span>
+                  </td>
+                  <td className="py-2.5 px-2.5 border-b border-gray-200 text-ud-dark">{m.nombre}</td>
+                  <td className="py-2.5 px-2.5 border-b border-gray-200 text-ud-dark">{m.creditos}</td>
+                  <td className="py-2.5 px-2.5 border-b border-gray-200 text-ud-dark">{m.profesor}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

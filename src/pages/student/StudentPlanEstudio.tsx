@@ -114,7 +114,7 @@ export const StudentPlanEstudio = () => {
             Ingeniería de Sistemas · Proyecto Curricular UD
           </p>
         </div>
-        <div className="flex gap-1.5 self-start md:self-center">
+        <div className="flex flex-wrap gap-1.5 self-start md:self-center">
           <button
             onClick={() => setActiveCycle('all')}
             className={`px-3 py-1.5 text-[12px] font-bold rounded-lg transition-all duration-200 cursor-pointer ${
@@ -269,7 +269,7 @@ export const StudentPlanEstudio = () => {
             <span className="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
             <span>Pendiente</span>
           </div>
-          <div className="flex items-center gap-1.5 border-l border-gray-200 pl-4 text-ud-green">
+          <div className="flex items-center gap-1.5 text-ud-green">
             <span className="inline-block px-1 bg-amber-100 border border-amber-300 text-amber-800 rounded font-normal text-[10px]">Ring Naranja</span>
             <span>Relación de Prerrequisito (Pasa el cursor)</span>
           </div>
