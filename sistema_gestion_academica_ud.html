@@ -1,0 +1,675 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ud-green: #0F6E56; --ud-green-light: #E1F5EE; --ud-green-mid: #1D9E75;
+    --ud-dark: #2C2C2A; --ud-muted: #5F5E5A; --ud-border: rgba(0,0,0,0.12);
+    --ud-bg: #F8FAF9; --ud-white: #fff; --ud-danger: #A32D2D; --ud-amber: #BA7517;
+    --sidebar-w: 210px;
+  }
+  body { font-family: 'Georgia', serif; background: var(--ud-bg); color: var(--ud-dark); font-size: 14px; }
+
+  #app { display: flex; flex-direction: column; min-height: 600px; }
+
+  .login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 600px; background: linear-gradient(135deg, #E1F5EE 0%, #fff 60%);
+  }
+  .login-card {
+    background: var(--ud-white); border-radius: 16px; border: 0.5px solid var(--ud-border);
+    padding: 2.5rem 2rem; width: 340px; box-shadow: 0 2px 24px rgba(15,110,86,0.10);
+  }
+  .login-logo { text-align: center; margin-bottom: 1.5rem; }
+  .login-logo .logo-circle {
+    width: 56px; height: 56px; background: var(--ud-green); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;
+    font-size: 22px; color: #fff; font-weight: 700; letter-spacing: -1px;
+  }
+  .login-logo h2 { font-size: 15px; color: var(--ud-green); font-weight: 600; font-family: sans-serif; }
+  .login-logo p { font-size: 12px; color: var(--ud-muted); font-family: sans-serif; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 12px; color: var(--ud-muted); font-family: sans-serif; margin-bottom: 4px; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 8px 12px; border: 0.5px solid var(--ud-border);
+    border-radius: 8px; font-size: 14px; font-family: sans-serif; background: var(--ud-bg);
+    color: var(--ud-dark); outline: none;
+  }
+  .form-group input:focus { border-color: var(--ud-green); }
+  .btn-primary {
+    width: 100%; padding: 10px; background: var(--ud-green); color: #fff;
+    border: none; border-radius: 8px; font-size: 14px; font-family: sans-serif;
+    cursor: pointer; font-weight: 600; transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--ud-green-mid); }
+  .login-hint { text-align: center; margin-top: 1rem; font-size: 11px; color: var(--ud-muted); font-family: sans-serif; }
+  .login-error { color: var(--ud-danger); font-size: 12px; font-family: sans-serif; margin-top: 0.5rem; text-align: center; }
+
+  .main-layout { display: flex; min-height: 600px; }
+  .sidebar {
+    width: var(--sidebar-w); background: var(--ud-dark); color: #fff;
+    display: flex; flex-direction: column; padding: 0; flex-shrink: 0;
+  }
+  .sidebar-header {
+    padding: 1.25rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-header .s-logo { font-size: 18px; font-weight: 700; color: #9FE1CB; letter-spacing: -0.5px; }
+  .sidebar-header .s-sub { font-size: 10px; color: rgba(255,255,255,0.5); font-family: sans-serif; margin-top: 1px; }
+  .sidebar-user {
+    padding: 0.75rem 1rem; background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .sidebar-user .u-name { font-size: 12px; font-weight: 600; font-family: sans-serif; color: #fff; }
+  .sidebar-user .u-role {
+    font-size: 10px; font-family: sans-serif; color: #9FE1CB;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .sidebar-nav { padding: 0.75rem 0; flex: 1; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px; padding: 8px 1rem;
+    cursor: pointer; font-family: sans-serif; font-size: 13px; color: rgba(255,255,255,0.7);
+    border-left: 3px solid transparent; transition: all 0.15s;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav-item.active { background: rgba(29,158,117,0.18); color: #9FE1CB; border-left-color: #9FE1CB; }
+  .nav-item i { font-size: 16px; }
+  .sidebar-footer { padding: 0.75rem 1rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .logout-btn {
+    display: flex; align-items: center; gap: 8px; font-family: sans-serif;
+    font-size: 12px; color: rgba(255,255,255,0.5); cursor: pointer;
+    padding: 6px 0;
+  }
+  .logout-btn:hover { color: #fff; }
+
+  .content-area { flex: 1; overflow-y: auto; padding: 1.5rem; background: var(--ud-bg); }
+  .page-header { margin-bottom: 1.25rem; }
+  .page-header h1 { font-size: 20px; font-weight: 600; color: var(--ud-dark); font-family: sans-serif; }
+  .page-header p { font-size: 13px; color: var(--ud-muted); font-family: sans-serif; margin-top: 2px; }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .stat-card {
+    background: var(--ud-white); border-radius: 10px; border: 0.5px solid var(--ud-border);
+    padding: 1rem; text-align: center;
+  }
+  .stat-card .s-val { font-size: 28px; font-weight: 700; color: var(--ud-green); font-family: sans-serif; }
+  .stat-card .s-lbl { font-size: 11px; color: var(--ud-muted); font-family: sans-serif; margin-top: 2px; }
+
+  .card {
+    background: var(--ud-white); border-radius: 12px; border: 0.5px solid var(--ud-border);
+    padding: 1.25rem; margin-bottom: 1rem;
+  }
+  .card h3 { font-size: 14px; font-weight: 600; font-family: sans-serif; color: var(--ud-dark); margin-bottom: 0.75rem; }
+
+  table { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 13px; }
+  th { text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ud-muted); border-bottom: 1px solid var(--ud-border); font-weight: 600; }
+  td { padding: 9px 10px; border-bottom: 0.5px solid var(--ud-border); color: var(--ud-dark); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--ud-bg); }
+
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 20px;
+    font-size: 11px; font-family: sans-serif; font-weight: 600;
+  }
+  .badge-green { background: var(--ud-green-light); color: var(--ud-green); }
+  .badge-amber { background: #FAEEDA; color: var(--ud-amber); }
+  .badge-red { background: #FCEBEB; color: var(--ud-danger); }
+  .badge-gray { background: #F1EFE8; color: var(--ud-muted); }
+
+  .btn { padding: 7px 14px; border-radius: 7px; font-size: 12px; font-family: sans-serif; cursor: pointer; font-weight: 600; border: none; transition: all 0.15s; }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+  .btn-green { background: var(--ud-green); color: #fff; }
+  .btn-green:hover { background: var(--ud-green-mid); }
+  .btn-outline { background: transparent; border: 0.5px solid var(--ud-border); color: var(--ud-dark); }
+  .btn-outline:hover { background: var(--ud-bg); }
+  .btn-danger { background: var(--ud-danger); color: #fff; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .f-group { margin-bottom: 0.75rem; }
+  .f-group label { display: block; font-size: 11px; color: var(--ud-muted); font-family: sans-serif; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .f-group input, .f-group select {
+    width: 100%; padding: 7px 10px; border: 0.5px solid var(--ud-border);
+    border-radius: 7px; font-size: 13px; font-family: sans-serif; background: var(--ud-bg); color: var(--ud-dark);
+  }
+  .alert { padding: 10px 14px; border-radius: 8px; font-family: sans-serif; font-size: 13px; margin-bottom: 0.75rem; }
+  .alert-success { background: var(--ud-green-light); color: var(--ud-green); }
+  .alert-error { background: #FCEBEB; color: var(--ud-danger); }
+
+  .horario-grid { display: grid; grid-template-columns: 80px repeat(6, 1fr); gap: 2px; font-family: sans-serif; font-size: 11px; }
+  .h-header { background: var(--ud-dark); color: #fff; padding: 5px; text-align: center; border-radius: 4px; font-weight: 600; }
+  .h-time { background: var(--ud-bg); padding: 5px; text-align: center; color: var(--ud-muted); display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+  .h-cell { background: var(--ud-bg); border-radius: 4px; min-height: 36px; }
+  .h-class { background: var(--ud-green-light); color: var(--ud-green); padding: 4px 6px; border-radius: 4px; font-weight: 600; border-left: 3px solid var(--ud-green); font-size: 10px; line-height: 1.3; min-height: 36px; display: flex; flex-direction: column; justify-content: center; }
+
+  .nota-input { width: 64px; padding: 4px 6px; border: 0.5px solid var(--ud-border); border-radius: 5px; font-size: 13px; font-family: sans-serif; text-align: center; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 1rem; border-bottom: 1px solid var(--ud-border); }
+  .tab { padding: 8px 14px; font-family: sans-serif; font-size: 13px; cursor: pointer; color: var(--ud-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab.active { color: var(--ud-green); border-bottom-color: var(--ud-green); font-weight: 600; }
+
+  .cert-box {
+    border: 2px solid var(--ud-green); border-radius: 12px; padding: 1.5rem;
+    text-align: center; font-family: serif; background: #fff;
+    max-width: 480px; margin: 0 auto;
+  }
+  .cert-box .cert-title { font-size: 18px; font-weight: 700; color: var(--ud-green); margin-bottom: 0.5rem; }
+  .cert-box .cert-sub { font-size: 12px; color: var(--ud-muted); font-family: sans-serif; margin-bottom: 1rem; }
+  .cert-box .cert-body { font-size: 13px; line-height: 1.8; color: var(--ud-dark); }
+  .cert-box .cert-body strong { color: var(--ud-green); }
+  .cert-divider { border: none; border-top: 1px solid var(--ud-border); margin: 1rem 0; }
+</style>
+
+<div id="app"></div>
+
+<script>
+const USERS = [
+  { id: 1, username: 'estudiante', password: '1234', role: 'estudiante', name: 'Laura Martínez', program: 'Ing. de Sistemas', semester: 7, code: '20212015' },
+  { id: 2, username: 'profesor', password: '1234', role: 'profesor', name: 'Dr. Carlos Rojas', department: 'Facultad de Ingeniería' },
+  { id: 3, username: 'admin', password: '1234', role: 'admin', name: 'Ana Gómez', position: 'Secretaria Académica' },
+];
+
+const MOCK_MATERIAS = [
+  { id: 'IS301', nombre: 'Ingeniería de Software', creditos: 4, docente: 'Dr. Carlos Rojas', cupos: 5, prerrequisito: null, dia: 'Lun', hora: '07:00-09:00', aula: 'A-204' },
+  { id: 'BD201', nombre: 'Bases de Datos II', creditos: 3, docente: 'Dra. Paola Vega', cupos: 3, prerrequisito: null, dia: 'Mar', hora: '09:00-11:00', aula: 'B-102' },
+  { id: 'RE401', nombre: 'Redes de Computadores', creditos: 3, docente: 'Ing. Pedro Lara', cupos: 0, prerrequisito: null, dia: 'Mié', hora: '14:00-16:00', aula: 'C-301' },
+  { id: 'SO301', nombre: 'Sistemas Operativos', creditos: 4, docente: 'Dr. Carlos Rojas', cupos: 8, prerrequisito: null, dia: 'Jue', hora: '11:00-13:00', aula: 'A-105' },
+  { id: 'IA501', nombre: 'Inteligencia Artificial', creditos: 3, docente: 'Dra. Paola Vega', cupos: 2, prerrequisito: 'BD201', dia: 'Vie', hora: '07:00-09:00', aula: 'Lab-2' },
+];
+
+const MOCK_NOTAS = [
+  { materia: 'Cálculo Diferencial', creditos: 4, nota: 4.2, estado: 'Aprobado', periodo: '2024-1' },
+  { materia: 'Programación I', creditos: 3, nota: 3.8, estado: 'Aprobado', periodo: '2024-1' },
+  { materia: 'Álgebra Lineal', creditos: 3, nota: 2.9, estado: 'Reprobado', periodo: '2024-1' },
+  { materia: 'Bases de Datos I', creditos: 4, nota: 4.5, estado: 'Aprobado', periodo: '2024-2' },
+  { materia: 'Programación II', creditos: 3, nota: 4.0, estado: 'Aprobado', periodo: '2024-2' },
+];
+
+const MOCK_ESTUDIANTES_ADMIN = [
+  { id: '20221001', nombre: 'Laura Martínez', programa: 'Ing. de Sistemas', semestre: 7, estado: 'Activo' },
+  { id: '20221002', nombre: 'Diego Herrera', programa: 'Ing. de Sistemas', semestre: 5, estado: 'Activo' },
+  { id: '20211003', nombre: 'Camila Torres', programa: 'Ing. Industrial', semestre: 9, estado: 'Activo' },
+  { id: '20201004', nombre: 'Juan Ospina', programa: 'Ing. de Sistemas', semestre: 10, estado: 'Inactivo' },
+];
+
+const ESTUDIANTES_PROFESOR = [
+  { id: '20221001', nombre: 'Laura Martínez', nota: '', guardado: false },
+  { id: '20221002', nombre: 'Diego Herrera', nota: '', guardado: false },
+  { id: '20200015', nombre: 'Sofía Ríos', nota: '', guardado: false },
+  { id: '20211033', nombre: 'Andrés Pinto', nota: '', guardado: false },
+];
+
+let state = {
+  view: 'login',
+  user: null,
+  activePage: 'dashboard',
+  loginError: '',
+  loginUser: '',
+  loginPass: '',
+  inscripcionMsg: '',
+  materiasInscritas: [MOCK_MATERIAS[0], MOCK_MATERIAS[3]],
+  materiasDisponibles: [MOCK_MATERIAS[1], MOCK_MATERIAS[2], MOCK_MATERIAS[4]],
+  notasProfesor: JSON.parse(JSON.stringify(ESTUDIANTES_PROFESOR)),
+  notasMsg: '',
+  estudiantesAdmin: JSON.parse(JSON.stringify(MOCK_ESTUDIANTES_ADMIN)),
+  nuevoEstNombre: '', nuevoEstId: '', nuevoEstProg: '', nuevoEstSem: '',
+  adminMsg: '',
+  periodoFiltro: 'todos',
+  activeTab: '0',
+};
+
+function render() {
+  const app = document.getElementById('app');
+  if (state.view === 'login') {
+    app.innerHTML = renderLogin();
+  } else {
+    app.innerHTML = renderMain();
+  }
+  bindEvents();
+}
+
+function renderLogin() {
+  return `
+    <div class="login-screen">
+      <div class="login-card">
+        <div class="login-logo">
+          <div class="logo-circle">UD</div>
+          <h2>Universidad Distrital</h2>
+          <p>Sistema de Gestión Académica</p>
+        </div>
+        <div class="form-group">
+          <label>Usuario institucional</label>
+          <input id="l-user" type="text" placeholder="ej: estudiante" value="${state.loginUser}">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input id="l-pass" type="password" placeholder="••••" value="${state.loginPass}">
+        </div>
+        <button class="btn-primary" id="btn-login">Iniciar sesión</button>
+        ${state.loginError ? `<p class="login-error">${state.loginError}</p>` : ''}
+        <p class="login-hint">Demo: <b>estudiante</b> / <b>profesor</b> / <b>admin</b> — contraseña: <b>1234</b></p>
+      </div>
+    </div>`;
+}
+
+function renderMain() {
+  const u = state.user;
+  const navItems = getNavItems(u.role);
+  return `
+    <div class="main-layout">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="s-logo">SGA·UD</div>
+          <div class="s-sub">Sistema Académico</div>
+        </div>
+        <div class="sidebar-user">
+          <div class="u-name">${u.name}</div>
+          <div class="u-role">${u.role === 'estudiante' ? 'Estudiante' : u.role === 'profesor' ? 'Docente' : 'Administrador'}</div>
+        </div>
+        <nav class="sidebar-nav">
+          ${navItems.map(item => `
+            <div class="nav-item ${state.activePage === item.id ? 'active' : ''}" data-page="${item.id}">
+              <i class="ti ${item.icon}" aria-hidden="true"></i> ${item.label}
+            </div>`).join('')}
+        </nav>
+        <div class="sidebar-footer">
+          <div class="logout-btn" id="btn-logout">
+            <i class="ti ti-logout" aria-hidden="true"></i> Cerrar sesión
+          </div>
+        </div>
+      </div>
+      <div class="content-area">
+        ${renderPage()}
+      </div>
+    </div>`;
+}
+
+function getNavItems(role) {
+  if (role === 'estudiante') return [
+    { id: 'dashboard', icon: 'ti-home', label: 'Inicio' },
+    { id: 'horario', icon: 'ti-calendar', label: 'Mi horario' },
+    { id: 'matricula', icon: 'ti-pencil-plus', label: 'Matrícula' },
+    { id: 'notas', icon: 'ti-file-description', label: 'Mis notas' },
+    { id: 'certificado', icon: 'ti-certificate', label: 'Certificado' },
+  ];
+  if (role === 'profesor') return [
+    { id: 'dashboard', icon: 'ti-home', label: 'Inicio' },
+    { id: 'mis-materias', icon: 'ti-books', label: 'Mis materias' },
+    { id: 'cargar-notas', icon: 'ti-edit', label: 'Cargar notas' },
+  ];
+  return [
+    { id: 'dashboard', icon: 'ti-home', label: 'Inicio' },
+    { id: 'gestionar-estudiantes', icon: 'ti-users', label: 'Estudiantes' },
+    { id: 'reportes', icon: 'ti-chart-bar', label: 'Reportes' },
+  ];
+}
+
+function renderPage() {
+  const role = state.user.role;
+  const page = state.activePage;
+  if (page === 'dashboard') return renderDashboard();
+  if (role === 'estudiante') {
+    if (page === 'horario') return renderHorario();
+    if (page === 'matricula') return renderMatricula();
+    if (page === 'notas') return renderNotas();
+    if (page === 'certificado') return renderCertificado();
+  }
+  if (role === 'profesor') {
+    if (page === 'mis-materias') return renderMisMaterias();
+    if (page === 'cargar-notas') return renderCargarNotas();
+  }
+  if (role === 'admin') {
+    if (page === 'gestionar-estudiantes') return renderGestionarEstudiantes();
+    if (page === 'reportes') return renderReportes();
+  }
+  return '<p>Página no encontrada</p>';
+}
+
+function renderDashboard() {
+  const u = state.user;
+  if (u.role === 'estudiante') return `
+    <div class="page-header"><h1>Bienvenida, ${u.name.split(' ')[0]}</h1><p>Período académico 2025-1 — Semestre ${u.semester}</p></div>
+    <div class="cards-grid">
+      <div class="stat-card"><div class="s-val">${state.materiasInscritas.length}</div><div class="s-lbl">Materias inscritas</div></div>
+      <div class="stat-card"><div class="s-val">${state.materiasInscritas.reduce((a,m)=>a+m.creditos,0)}</div><div class="s-lbl">Créditos activos</div></div>
+      <div class="stat-card"><div class="s-val">4.1</div><div class="s-lbl">Promedio acumulado</div></div>
+      <div class="stat-card"><div class="s-val">112</div><div class="s-lbl">Créditos aprobados</div></div>
+    </div>
+    <div class="card"><h3>Materias inscritas — 2025-1</h3>
+      <table><thead><tr><th>Código</th><th>Materia</th><th>Créditos</th><th>Docente</th><th>Horario</th></tr></thead>
+      <tbody>${state.materiasInscritas.map(m=>`<tr><td><span class="badge badge-gray">${m.id}</span></td><td>${m.nombre}</td><td>${m.creditos}</td><td>${m.docente}</td><td>${m.dia} ${m.hora}</td></tr>`).join('')}</tbody></table></div>`;
+
+  if (u.role === 'profesor') return `
+    <div class="page-header"><h1>Bienvenido, ${u.name}</h1><p>Período 2025-1 — ${u.department}</p></div>
+    <div class="cards-grid">
+      <div class="stat-card"><div class="s-val">2</div><div class="s-lbl">Materias asignadas</div></div>
+      <div class="stat-card"><div class="s-val">4</div><div class="s-lbl">Estudiantes</div></div>
+      <div class="stat-card"><div class="s-val">14</div><div class="s-lbl">Horas semanales</div></div>
+    </div>
+    <div class="card"><h3>Mis materias este período</h3>
+      <table><thead><tr><th>Código</th><th>Materia</th><th>Grupo</th><th>Horario</th><th>Aula</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-gray">IS301</span></td><td>Ingeniería de Software</td><td>01</td><td>Lun 07:00-09:00</td><td>A-204</td></tr>
+        <tr><td><span class="badge badge-gray">SO301</span></td><td>Sistemas Operativos</td><td>02</td><td>Jue 11:00-13:00</td><td>A-105</td></tr>
+      </tbody></table></div>`;
+
+  return `
+    <div class="page-header"><h1>Panel de Administración</h1><p>${u.position} — Período 2025-1</p></div>
+    <div class="cards-grid">
+      <div class="stat-card"><div class="s-val">${state.estudiantesAdmin.filter(e=>e.estado==='Activo').length}</div><div class="s-lbl">Estudiantes activos</div></div>
+      <div class="stat-card"><div class="s-val">5</div><div class="s-lbl">Programas</div></div>
+      <div class="stat-card"><div class="s-val">28</div><div class="s-lbl">Docentes activos</div></div>
+      <div class="stat-card"><div class="s-val">3</div><div class="s-lbl">Solicitudes grado</div></div>
+    </div>
+    <div class="card"><h3>Resumen de estudiantes por programa</h3>
+      <table><thead><tr><th>Programa</th><th>Activos</th><th>Estado período</th></tr></thead>
+      <tbody>
+        <tr><td>Ingeniería de Sistemas</td><td>312</td><td><span class="badge badge-green">Matrícula abierta</span></td></tr>
+        <tr><td>Ingeniería Industrial</td><td>278</td><td><span class="badge badge-green">Matrícula abierta</span></td></tr>
+        <tr><td>Ingeniería Electrónica</td><td>198</td><td><span class="badge badge-amber">Por abrir</span></td></tr>
+      </tbody></table></div>`;
+}
+
+function renderHorario() {
+  const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const franjas = ['07:00', '09:00', '11:00', '14:00', '16:00'];
+  const mapa = {};
+  state.materiasInscritas.forEach(m => { mapa[`${m.dia}-${m.hora.split('-')[0]}`] = m; });
+  return `
+    <div class="page-header"><h1>Mi horario</h1><p>Período 2025-1</p></div>
+    <div class="card">
+      <div class="horario-grid">
+        <div class="h-header" style="background:transparent;color:var(--ud-muted)">Hora</div>
+        ${dias.map(d=>`<div class="h-header">${d}</div>`).join('')}
+        ${franjas.map(f=>`
+          <div class="h-time">${f}</div>
+          ${dias.map(d=>{
+            const key=`${d}-${f}`;
+            const m=mapa[key];
+            return m ? `<div class="h-class"><b>${m.nombre}</b><span>${m.aula}</span></div>` : `<div class="h-cell"></div>`;
+          }).join('')}
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function renderMatricula() {
+  return `
+    <div class="page-header"><h1>Matrícula de asignaturas</h1><p>Período 2025-1 — Matrícula abierta</p></div>
+    ${state.inscripcionMsg ? `<div class="alert ${state.inscripcionMsg.startsWith('✓') ? 'alert-success' : 'alert-error'}">${state.inscripcionMsg}</div>` : ''}
+    <div class="card"><h3>Materias inscritas</h3>
+      <table><thead><tr><th>Código</th><th>Materia</th><th>Créditos</th><th>Horario</th><th>Acción</th></tr></thead>
+      <tbody>${state.materiasInscritas.map(m=>`
+        <tr><td><span class="badge badge-green">${m.id}</span></td><td>${m.nombre}</td><td>${m.creditos}</td><td>${m.dia} ${m.hora}</td>
+        <td><button class="btn btn-sm btn-outline" data-drop="${m.id}" style="color:var(--ud-danger);border-color:var(--ud-danger)">Cancelar</button></td></tr>
+      `).join('')}</tbody></table></div>
+    <div class="card"><h3>Asignaturas disponibles</h3>
+      <table><thead><tr><th>Código</th><th>Materia</th><th>Créditos</th><th>Cupos</th><th>Docente</th><th>Acción</th></tr></thead>
+      <tbody>${state.materiasDisponibles.map(m=>`
+        <tr><td><span class="badge badge-gray">${m.id}</span></td><td>${m.nombre}</td><td>${m.creditos}</td>
+        <td>${m.cupos > 0 ? `<span class="badge badge-green">${m.cupos} disp.</span>` : `<span class="badge badge-red">Sin cupos</span>`}</td>
+        <td>${m.docente}</td>
+        <td>${m.cupos > 0 ? `<button class="btn btn-sm btn-green" data-inscribir="${m.id}">Inscribir</button>` : `<button class="btn btn-sm btn-outline" disabled style="opacity:0.4">Sin cupos</button>`}</td></tr>
+      `).join('')}</tbody></table></div>`;
+}
+
+function renderNotas() {
+  const periodos = ['todos', '2024-1', '2024-2'];
+  const notas = state.periodoFiltro === 'todos' ? MOCK_NOTAS : MOCK_NOTAS.filter(n=>n.periodo===state.periodoFiltro);
+  const prom = (notas.reduce((a,n)=>a+n.nota,0)/notas.length).toFixed(1);
+  return `
+    <div class="page-header"><h1>Mis calificaciones</h1><p>Historial académico completo</p></div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+        <h3 style="margin:0">Notas por período</h3>
+        <select id="filtro-periodo" style="padding:5px 10px;border-radius:7px;border:0.5px solid var(--ud-border);font-family:sans-serif;font-size:12px">
+          ${periodos.map(p=>`<option value="${p}" ${state.periodoFiltro===p?'selected':''}>${p==='todos'?'Todos los períodos':p}</option>`).join('')}
+        </select>
+      </div>
+      <table><thead><tr><th>Materia</th><th>Créditos</th><th>Nota</th><th>Estado</th><th>Período</th></tr></thead>
+      <tbody>${notas.map(n=>`
+        <tr><td>${n.materia}</td><td>${n.creditos}</td>
+        <td><b style="color:${n.nota>=3?'var(--ud-green)':'var(--ud-danger)'}">${n.nota.toFixed(1)}</b></td>
+        <td><span class="badge ${n.estado==='Aprobado'?'badge-green':'badge-red'}">${n.estado}</span></td>
+        <td>${n.periodo}</td></tr>
+      `).join('')}</tbody></table>
+      <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:0.5px solid var(--ud-border);font-family:sans-serif;font-size:13px;display:flex;gap:1.5rem">
+        <span>Promedio período: <b style="color:var(--ud-green)">${prom}</b></span>
+        <span>Materias: <b>${notas.length}</b></span>
+        <span>Aprobadas: <b style="color:var(--ud-green)">${notas.filter(n=>n.estado==='Aprobado').length}</b></span>
+      </div>
+    </div>`;
+}
+
+function renderCertificado() {
+  const u = state.user;
+  const hoy = new Date().toLocaleDateString('es-CO', {year:'numeric',month:'long',day:'numeric'});
+  return `
+    <div class="page-header"><h1>Certificado de notas</h1><p>Generación de certificados académicos</p></div>
+    <div class="cert-box">
+      <div class="cert-title">UNIVERSIDAD DISTRITAL</div>
+      <div style="font-size:11px;color:var(--ud-muted);font-family:sans-serif;margin-bottom:0.5rem">Francisco José de Caldas</div>
+      <div style="font-size:13px;font-weight:700;font-family:sans-serif;color:var(--ud-dark);margin-bottom:1rem;letter-spacing:0.5px">CERTIFICADO DE NOTAS</div>
+      <hr class="cert-divider">
+      <div class="cert-body">
+        La Secretaría Académica certifica que<br>
+        <strong>${u.name}</strong><br>
+        identificada con código <strong>${u.code}</strong>,<br>
+        estudiante del programa de <strong>${u.program}</strong>,<br>
+        cursando el <strong>Semestre ${u.semester}</strong>,<br>
+        obtuvo las siguientes calificaciones:<br><br>
+        <table style="width:100%;font-size:12px;margin:0 auto">
+          <thead><tr><th style="text-align:left;padding:4px 6px;border-bottom:1px solid var(--ud-border)">Materia</th><th style="padding:4px;border-bottom:1px solid var(--ud-border)">Nota</th><th style="padding:4px;border-bottom:1px solid var(--ud-border)">Estado</th></tr></thead>
+          <tbody>${MOCK_NOTAS.filter(n=>n.periodo==='2024-2').map(n=>`<tr><td style="padding:4px 6px;text-align:left">${n.materia}</td><td style="padding:4px;text-align:center">${n.nota.toFixed(1)}</td><td style="padding:4px;text-align:center">${n.estado}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+      <hr class="cert-divider">
+      <div style="font-size:11px;color:var(--ud-muted);font-family:sans-serif">Expedido el ${hoy} · Válido solo con sello institucional</div>
+    </div>
+    <div style="text-align:center;margin-top:1rem">
+      <button class="btn btn-green" id="btn-imprimir"><i class="ti ti-download" aria-hidden="true"></i> Descargar certificado</button>
+    </div>`;
+}
+
+function renderMisMaterias() {
+  return `
+    <div class="page-header"><h1>Mis materias</h1><p>Período 2025-1 — Grupos asignados</p></div>
+    <div class="card"><h3>Ingeniería de Software — Grupo 01</h3>
+      <table><thead><tr><th>Código</th><th>Estudiante</th><th>Nota registrada</th></tr></thead>
+      <tbody>${ESTUDIANTES_PROFESOR.map(e=>`<tr><td><span class="badge badge-gray">${e.id}</span></td><td>${e.nombre}</td><td>${state.notasProfesor.find(n=>n.id===e.id)?.guardado ? `<span class="badge badge-green">${state.notasProfesor.find(n=>n.id===e.id).nota}</span>` : '<span class="badge badge-amber">Pendiente</span>'}</td></tr>`).join('')}</tbody></table></div>
+    <div class="card"><h3>Sistemas Operativos — Grupo 02</h3>
+      <p style="font-family:sans-serif;font-size:13px;color:var(--ud-muted)">Notas aún no abiertas para este período.</p></div>`;
+}
+
+function renderCargarNotas() {
+  return `
+    <div class="page-header"><h1>Cargar calificaciones</h1><p>Ingeniería de Software — Grupo 01 — 2025-1</p></div>
+    ${state.notasMsg ? `<div class="alert ${state.notasMsg.startsWith('✓') ? 'alert-success' : 'alert-error'}">${state.notasMsg}</div>` : ''}
+    <div class="card">
+      <h3>Lista de estudiantes</h3>
+      <table><thead><tr><th>Código</th><th>Estudiante</th><th>Nota (0.0 – 5.0)</th><th>Estado</th></tr></thead>
+      <tbody>
+        ${state.notasProfesor.map((e,i)=>`
+          <tr>
+            <td><span class="badge badge-gray">${e.id}</span></td>
+            <td>${e.nombre}</td>
+            <td><input class="nota-input" type="number" min="0" max="5" step="0.1" value="${e.nota}" data-nota-idx="${i}" placeholder="0.0"></td>
+            <td>${e.guardado ? `<span class="badge badge-green">Guardada</span>` : `<span class="badge badge-amber">Pendiente</span>`}</td>
+          </tr>`).join('')}
+      </tbody></table>
+      <div style="margin-top:1rem;display:flex;gap:8px">
+        <button class="btn btn-green" id="btn-guardar-notas">Guardar calificaciones</button>
+        <button class="btn btn-outline" id="btn-limpiar-notas">Limpiar</button>
+      </div>
+    </div>`;
+}
+
+function renderGestionarEstudiantes() {
+  return `
+    <div class="page-header"><h1>Gestión de estudiantes</h1><p>Administración del padrón académico</p></div>
+    ${state.adminMsg ? `<div class="alert ${state.adminMsg.startsWith('✓') ? 'alert-success' : 'alert-error'}">${state.adminMsg}</div>` : ''}
+    <div class="card"><h3>Registrar nuevo estudiante</h3>
+      <div class="form-row">
+        <div class="f-group"><label>Nombre completo</label><input id="n-nombre" placeholder="Nombre y apellidos" value="${state.nuevoEstNombre}"></div>
+        <div class="f-group"><label>Código / Documento</label><input id="n-id" placeholder="Ej: 20251001" value="${state.nuevoEstId}"></div>
+      </div>
+      <div class="form-row">
+        <div class="f-group"><label>Programa</label>
+          <select id="n-prog">
+            <option value="">Seleccionar programa</option>
+            <option ${state.nuevoEstProg==='Ing. de Sistemas'?'selected':''}>Ing. de Sistemas</option>
+            <option ${state.nuevoEstProg==='Ing. Industrial'?'selected':''}>Ing. Industrial</option>
+            <option ${state.nuevoEstProg==='Ing. Electrónica'?'selected':''}>Ing. Electrónica</option>
+          </select></div>
+        <div class="f-group"><label>Semestre inicial</label>
+          <select id="n-sem">
+            ${[1,2,3,4,5,6,7,8,9,10].map(s=>`<option ${state.nuevoEstSem==s?'selected':''}>${s}</option>`).join('')}
+          </select></div>
+      </div>
+      <button class="btn btn-green" id="btn-agregar-est">Registrar estudiante</button>
+    </div>
+    <div class="card"><h3>Estudiantes registrados (${state.estudiantesAdmin.length})</h3>
+      <table><thead><tr><th>Código</th><th>Nombre</th><th>Programa</th><th>Semestre</th><th>Estado</th></tr></thead>
+      <tbody>${state.estudiantesAdmin.map(e=>`
+        <tr><td><span class="badge badge-gray">${e.id}</span></td><td>${e.nombre}</td><td>${e.programa}</td><td>${e.semestre}</td>
+        <td><span class="badge ${e.estado==='Activo'?'badge-green':'badge-red'}">${e.estado}</span></td></tr>
+      `).join('')}</tbody></table></div>`;
+}
+
+function renderReportes() {
+  return `
+    <div class="page-header"><h1>Reportes académicos</h1><p>Estadísticas del período 2025-1</p></div>
+    <div class="cards-grid">
+      <div class="stat-card"><div class="s-val">788</div><div class="s-lbl">Total estudiantes</div></div>
+      <div class="stat-card"><div class="s-val">91%</div><div class="s-lbl">Tasa matrícula</div></div>
+      <div class="stat-card"><div class="s-val">3.8</div><div class="s-lbl">Promedio institucional</div></div>
+      <div class="stat-card"><div class="s-val">12</div><div class="s-lbl">Candidatos a grado</div></div>
+    </div>
+    <div class="card"><h3>Distribución por programa</h3>
+      <table><thead><tr><th>Programa</th><th>Estudiantes</th><th>Promedio</th><th>% Aprobación</th></tr></thead>
+      <tbody>
+        <tr><td>Ing. de Sistemas</td><td>312</td><td>3.9</td><td><span class="badge badge-green">87%</span></td></tr>
+        <tr><td>Ing. Industrial</td><td>278</td><td>3.7</td><td><span class="badge badge-green">82%</span></td></tr>
+        <tr><td>Ing. Electrónica</td><td>198</td><td>3.8</td><td><span class="badge badge-amber">79%</span></td></tr>
+      </tbody></table></div>
+    <div style="text-align:right;margin-top:0.5rem">
+      <button class="btn btn-outline btn-sm" id="btn-exportar"><i class="ti ti-download" aria-hidden="true"></i> Exportar reporte PDF</button>
+    </div>`;
+}
+
+function bindEvents() {
+  const get = id => document.getElementById(id);
+
+  if (state.view === 'login') {
+    get('l-user') && get('l-user').addEventListener('input', e => state.loginUser = e.target.value);
+    get('l-pass') && get('l-pass').addEventListener('input', e => state.loginPass = e.target.value);
+    get('btn-login') && get('btn-login').addEventListener('click', doLogin);
+    get('l-pass') && get('l-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  } else {
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.addEventListener('click', () => { state.activePage = el.dataset.page; state.inscripcionMsg=''; state.notasMsg=''; state.adminMsg=''; render(); });
+    });
+    get('btn-logout') && get('btn-logout').addEventListener('click', () => {
+      state = { ...state, view: 'login', user: null, activePage: 'dashboard', loginUser:'', loginPass:'', loginError:'' };
+      render();
+    });
+
+    if (state.activePage === 'matricula') {
+      document.querySelectorAll('[data-inscribir]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.inscribir;
+          const mat = state.materiasDisponibles.find(m=>m.id===id);
+          if (!mat) return;
+          state.materiasInscritas.push(mat);
+          state.materiasDisponibles = state.materiasDisponibles.filter(m=>m.id!==id);
+          state.inscripcionMsg = `✓ ${mat.nombre} inscrita correctamente.`;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-drop]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.drop;
+          const mat = state.materiasInscritas.find(m=>m.id===id);
+          if (!mat) return;
+          state.materiasDisponibles.push(mat);
+          state.materiasInscritas = state.materiasInscritas.filter(m=>m.id!==id);
+          state.inscripcionMsg = `Inscripción de ${mat.nombre} cancelada.`;
+          render();
+        });
+      });
+    }
+
+    if (state.activePage === 'notas') {
+      get('filtro-periodo') && get('filtro-periodo').addEventListener('change', e => {
+        state.periodoFiltro = e.target.value; render();
+      });
+    }
+
+    if (state.activePage === 'cargar-notas') {
+      document.querySelectorAll('[data-nota-idx]').forEach(input => {
+        input.addEventListener('input', e => {
+          state.notasProfesor[parseInt(e.target.dataset.notaIdx)].nota = e.target.value;
+        });
+      });
+      get('btn-guardar-notas') && get('btn-guardar-notas').addEventListener('click', () => {
+        const invalidas = state.notasProfesor.filter(n => n.nota === '' || isNaN(parseFloat(n.nota)) || parseFloat(n.nota) < 0 || parseFloat(n.nota) > 5);
+        if (invalidas.length > 0) { state.notasMsg = 'Error: todas las notas deben estar entre 0.0 y 5.0'; render(); return; }
+        state.notasProfesor = state.notasProfesor.map(n => ({ ...n, guardado: true }));
+        state.notasMsg = '✓ Calificaciones guardadas correctamente para el Grupo 01.';
+        render();
+      });
+      get('btn-limpiar-notas') && get('btn-limpiar-notas').addEventListener('click', () => {
+        state.notasProfesor = state.notasProfesor.map(n => ({ ...n, nota: '', guardado: false }));
+        state.notasMsg = '';
+        render();
+      });
+    }
+
+    if (state.activePage === 'gestionar-estudiantes') {
+      ['n-nombre','n-id','n-prog','n-sem'].forEach(id => {
+        const el = get(id);
+        if (el) el.addEventListener('input', e => {
+          if(id==='n-nombre') state.nuevoEstNombre=e.target.value;
+          if(id==='n-id') state.nuevoEstId=e.target.value;
+          if(id==='n-prog') state.nuevoEstProg=e.target.value;
+          if(id==='n-sem') state.nuevoEstSem=e.target.value;
+        });
+      });
+      get('btn-agregar-est') && get('btn-agregar-est').addEventListener('click', () => {
+        if (!state.nuevoEstNombre || !state.nuevoEstId || !state.nuevoEstProg) {
+          state.adminMsg = 'Error: completa todos los campos obligatorios.'; render(); return;
+        }
+        if (state.estudiantesAdmin.find(e=>e.id===state.nuevoEstId)) {
+          state.adminMsg = 'Error: el código ya existe en el sistema.'; render(); return;
+        }
+        state.estudiantesAdmin.unshift({ id: state.nuevoEstId, nombre: state.nuevoEstNombre, programa: state.nuevoEstProg, semestre: parseInt(state.nuevoEstSem)||1, estado: 'Activo' });
+        state.adminMsg = `✓ Estudiante ${state.nuevoEstNombre} registrado correctamente.`;
+        state.nuevoEstNombre=''; state.nuevoEstId=''; state.nuevoEstProg=''; state.nuevoEstSem='';
+        render();
+      });
+    }
+
+    get('btn-imprimir') && get('btn-imprimir').addEventListener('click', () => {
+      alert('Certificado listo para imprimir.\n(En producción: generaría un PDF con encabezado institucional)');
+    });
+    get('btn-exportar') && get('btn-exportar').addEventListener('click', () => {
+      alert('Reporte exportado.\n(En producción: generaría PDF con estadísticas completas)');
+    });
+  }
+}
+
+function doLogin() {
+  const uInput = document.getElementById('l-user')?.value.trim();
+  const pInput = document.getElementById('l-pass')?.value.trim();
+  const found = USERS.find(u => u.username === uInput && u.password === pInput);
+  if (found) {
+    state.user = found;
+    state.view = 'main';
+    state.activePage = 'dashboard';
+    state.loginError = '';
+    render();
+  } else {
+    state.loginError = 'Usuario o contraseña incorrectos.';
+    render();
+  }
+}
+
+render();
+</script>
